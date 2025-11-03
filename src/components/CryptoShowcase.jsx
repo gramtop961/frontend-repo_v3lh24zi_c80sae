@@ -1,60 +1,91 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Coins, TrendingUp, ArrowRight } from 'lucide-react';
 
-const coins = [
-  {
-    id: 'btc',
-    name: 'Bitcoin (BTC)',
-    img: 'https://images.unsplash.com/photo-1518544881170-9d7fb4e6f321?auto=format&fit=crop&w=1200&q=60',
-    blurb: 'The original cryptocurrency. Great for tracing large value flows and exchange movements.'
-  },
-  {
-    id: 'eth',
-    name: 'Ethereum (ETH)',
-    img: 'https://images.unsplash.com/photo-1623482562303-894fff7f4b07?auto=format&fit=crop&w=1200&q=60',
-    blurb: 'Smart contract hub. Analyze DeFi interactions, NFT trades, and contract wallets.'
-  },
-  {
-    id: 'sol',
-    name: 'Solana (SOL)',
-    img: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=1200&q=60',
-    blurb: 'High-throughput chain. Follow rapid on-chain activity and program accounts.'
-  }
+const DATA = [
+  { symbol: 'BTC', name: 'Bitcoin', price: 67850, change: 1.8 },
+  { symbol: 'ETH', name: 'Ethereum', price: 3450, change: -0.6 },
+  { symbol: 'SOL', name: 'Solana', price: 156.2, change: 3.1 },
+  { symbol: 'BNB', name: 'BNB', price: 590.4, change: 0.9 },
+  { symbol: 'XRP', name: 'XRP', price: 0.62, change: 2.4 },
+  { symbol: 'ADA', name: 'Cardano', price: 0.42, change: -1.2 },
+  { symbol: 'DOGE', name: 'Dogecoin', price: 0.17, change: 5.8 },
+  { symbol: 'DOT', name: 'Polkadot', price: 6.45, change: -0.3 },
+  { symbol: 'MATIC', name: 'Polygon', price: 0.88, change: 1.2 },
+  { symbol: 'LINK', name: 'Chainlink', price: 14.56, change: 0.4 },
+  { symbol: 'AVAX', name: 'Avalanche', price: 29.1, change: -2.1 },
+  { symbol: 'TRX', name: 'TRON', price: 0.12, change: 0.2 },
+  { symbol: 'LTC', name: 'Litecoin', price: 84.2, change: -0.9 },
 ];
 
+const formatPrice = (n) => {
+  if (n >= 1000) return `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+  return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
 const CryptoShowcase = () => {
+  // Slight shuffle for visual freshness without relying on backend
+  const rows = useMemo(() => {
+    return [...DATA].sort((a, b) => a.symbol.localeCompare(b.symbol));
+  }, []);
+
   return (
     <section className="w-full bg-slate-50 py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="flex items-center gap-3">
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
-            <Coins className="h-5 w-5" />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
+              <Coins className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">Crypto market list</h2>
+              <p className="mt-1 text-slate-600">Browse a wider set of assets. Click any to analyze activity.</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">Popular assets to analyze</h2>
-            <p className="mt-1 text-slate-600">Jump-start your research with top networks and tokens.</p>
-          </div>
+          <a href="#track" className="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-slate-900 hover:text-blue-600">
+            Analyze an address
+            <ArrowRight className="h-4 w-4" />
+          </a>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {coins.map((c) => (
-            <div key={c.id} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="aspect-[16/9] overflow-hidden">
-                <img src={c.img} alt={c.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              </div>
-              <div className="p-5">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-slate-900">{c.name}</h3>
-                  <TrendingUp className="h-4 w-4 text-emerald-600" />
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="grid grid-cols-12 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 bg-slate-50">
+            <div className="col-span-4 sm:col-span-5">Asset</div>
+            <div className="col-span-4 sm:col-span-3">Price</div>
+            <div className="col-span-2 sm:col-span-2">24h</div>
+            <div className="col-span-2 sm:col-span-2 text-right">Action</div>
+          </div>
+          <div className="max-h-[520px] overflow-auto">
+            {rows.map((c) => {
+              const up = c.change >= 0;
+              return (
+                <div
+                  key={c.symbol}
+                  className="grid grid-cols-12 items-center px-4 py-4 border-t border-slate-100 hover:bg-slate-50/60 transition-colors"
+                >
+                  <div className="col-span-4 sm:col-span-5 flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center font-semibold text-slate-700">
+                      {c.symbol.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-900 truncate">{c.name}</p>
+                      <p className="text-xs text-slate-500">{c.symbol}</p>
+                    </div>
+                  </div>
+                  <div className="col-span-4 sm:col-span-3 font-mono text-slate-900">{formatPrice(c.price)}</div>
+                  <div className={`col-span-2 sm:col-span-2 flex items-center gap-1 font-medium ${up ? 'text-emerald-600' : 'text-rose-600'}`}> 
+                    <TrendingUp className={`h-4 w-4 ${up ? '' : 'rotate-180'}`} />
+                    {up ? '+' : ''}{c.change.toFixed(2)}%
+                  </div>
+                  <div className="col-span-2 sm:col-span-2 text-right">
+                    <a href="#track" className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 hover:text-blue-600">
+                      Analyze
+                      <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </div>
                 </div>
-                <p className="mt-2 text-sm text-slate-600">{c.blurb}</p>
-                <a href="#track" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-900 hover:text-blue-600">
-                  Analyze now
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
